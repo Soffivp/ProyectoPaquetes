@@ -9,7 +9,6 @@ import clases.Direcciones;
 import clases.Estado;
 import clases.Paquete;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Scanner;
 import static logica.verificarCliente.ValidaCedula;
@@ -27,55 +26,49 @@ public class Ejecutor {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        ArrayList<Cliente> clientes = new ArrayList<>();
         String opc;
         int a;
         Cliente cli = new Cliente();
         Scanner sc = new Scanner(System.in);
         boolean bandera = true;
+        Paquete paquete = new Paquete();
         do {
             System.out.println("-----Menu-----");
             System.out.println("1) Ingresar Cliente");
             System.out.println("2) Ingresar un Paquete");
-            System.out.println("3) Ingresar Direccion");
-            System.out.println("4) Listar");
-            System.out.println("5) Salir");
+            System.out.println("3) Cambiar el estado del paquete");
+            System.out.println("4) Ingresar Direccion");
+            System.out.println("5) Listar");
+            System.out.println("6) Salir");
             System.out.print("Ingrese un opcion: ");
             opc = sc.nextLine();
             switch (opc) {
                 case "1" -> {
-                    insertarCliente(clientes);
+                    insertarCliente(cli);
                 }
                 case "2" -> {
-                    System.out.println("Ingrese la cedula del cliente");
-                    opc = sc.nextLine();
-                    cli.setCedula(opc);
-                    a = buscarCliente(clientes, cli);
-                    if (a == -1) {
-                        System.out.println("No existe el cliente");
-                    } else {
-                        cli = clientes.get(a);
-                        insertarPaquete(cli);
-                        clientes.add(a, cli);
-                    }
+                    insertarPaquete(cli);
                 }
                 case "3" -> {
-                    System.out.println("Ingrese la cedula del cliente");
+                    System.out.print("Ingrese el codigo del paquete: ");
                     opc = sc.nextLine();
-                    cli.setCedula(opc);
-                    a = buscarCliente(clientes, cli);
+                    paquete.setCodigo(opc);
+                    a = buscarPaquete(cli, paquete);
                     if (a == -1) {
-                        System.out.println("No existe el cliente");
+                        System.out.println("No existe el paquete");
                     } else {
-                        cli = clientes.get(a);
-                        insertarDirecion(cli);
-                        clientes.add(a, cli);
+                        paquete = cli.getPaquetes().get(a);
+                        cambiarEstado(paquete);
+                        cli.getPaquetes().add(a, paquete);
                     }
                 }
                 case "4" -> {
-                    listar(clientes);
+                    insertarDirecion(cli);
                 }
                 case "5" -> {
+                    listar(cli);
+                }
+                case "6" -> {
                     bandera = false;
                 }
                 default -> {
@@ -86,33 +79,37 @@ public class Ejecutor {
 
     }
 
-    private static void insertarCliente(ArrayList<Cliente> clientes) {
-        Cliente cli = new Cliente();
+    private static void insertarCliente(Cliente cli) {
+
         String aux;
         Scanner sc = new Scanner(System.in);
-        System.out.print("Ingrese su nombre: ");
-        aux = sc.nextLine();
-        cli.setNom(aux);
-        System.out.print("Ingrese su apellido: ");
-        aux = sc.nextLine();
-        cli.setApe(aux);
-        System.out.print("Ingrese su cedula: ");
-        aux = sc.nextLine();
-        cli.setCedula(aux);
-        if (!ValidaCedula(cli)) {
-            System.out.println("Cedula no valida");
+        if (cli.getApe() != null && cli.getNom() != null) {
+            System.out.println("Ya existe un cliente");
         } else {
-            cli.setId(1);
-            System.out.print("Ingrese su correo: ");
+            System.out.print("Ingrese su nombre: ");
             aux = sc.nextLine();
-            cli.setCorreo(aux);
-            if (!validarCorreo(cli)) {
-                System.out.println("Ingrese bien el correo");
+            cli.setNom(aux);
+            System.out.print("Ingrese su apellido: ");
+            aux = sc.nextLine();
+            cli.setApe(aux);
+            System.out.print("Ingrese su cedula: ");
+            aux = sc.nextLine();
+            cli.setCedula(aux);
+            if (!ValidaCedula(cli)) {
+                System.out.println("Cedula no valida");
             } else {
-                cli.setId(clientes.size() + 1);
-                clientes.add(cli);
+                cli.setId(1);
+                System.out.print("Ingrese su correo: ");
+                aux = sc.nextLine();
+                cli.setCorreo(aux);
+                if (!validarCorreo(cli)) {
+                    System.out.println("Ingrese bien el correo");
+                } else {
+                    System.out.println("Cliente ingresado");
+                }
             }
         }
+
     }
 
     private static void insertarDirecion(Cliente cli) {
@@ -140,8 +137,10 @@ public class Ejecutor {
                     cli.getDireccioneses().add(direc);
 
                 } else {
-                    cli.getDireccioneses().add(direc);
                     direc.setId(1);
+                    System.out.println("Direccion agregada");
+                    cli.getDireccioneses().add(direc);
+
                 }
             }
         } else {
@@ -149,11 +148,9 @@ public class Ejecutor {
         }
     }
 
-    private static void listar(ArrayList<Cliente> clientes) {
-        if (!clientes.isEmpty()) {
-            for (Cliente cliente : clientes) {
-                System.out.println(cliente);
-            }
+    private static void listar(Cliente cli) {
+        if (cli.getApe() != null && cli.getNom() != null) {
+            System.out.println(cli);
         } else {
             System.out.println("Ingrese primero un cliente");
         }
@@ -164,8 +161,6 @@ public class Ejecutor {
         Scanner sc = new Scanner(System.in);
         Paquete paque = new Paquete();
         Estado estado1 = new Estado(1, "Creado", fechaActual());
-        Estado estado2 = new Estado(2, "Despachado", fechaActual());
-        Estado estado3 = new Estado(3, "Entregado", fechaActual());
         if (cli.getApe() != null && cli.getNom() != null && !cli.getDireccioneses().isEmpty()) {
             System.out.println("Ingrese el Codigo del paquete:");
             aux = sc.nextLine();
@@ -177,8 +172,6 @@ public class Ejecutor {
             paque.setLargo(obtenerNumero("Ingrese el largo del paquete: "));
             paque.setPeso(obtenerNumero("Ingrese el peso del paquete: "));
             paque.getEstados().add(estado1);
-            paque.getEstados().add(estado2);
-            paque.getEstados().add(estado3);
             if (!cli.getPaquetes().isEmpty()) {
                 paque.setId(cli.getPaquetes().size() + 1);
                 cli.getPaquetes().add(paque);
@@ -218,12 +211,45 @@ public class Ejecutor {
         return numero;
     }
 
-    private static int buscarCliente(ArrayList<Cliente> clientes, Cliente cli) {
-        for (int i = 0; i < clientes.size(); i++) {
-            if (clientes.get(i).getCedula().equals(cli.getCedula())) {
+    private static int buscarPaquete(Cliente cli, Paquete paque) {
+        for (int i = 0; i < cli.getPaquetes().size(); i++) {
+            if (cli.getPaquetes().get(i).getCodigo().equals(paque.getCodigo())) {
                 return i;
             }
         }
         return -1;
+    }
+
+    private static Paquete cambiarEstado(Paquete pa) {
+        String aux, opc;
+        Scanner sc = new Scanner(System.in);
+        if (pa.getEstados().size() < 3) {
+            System.out.println("Seleccione el estado que desea agregar");
+            System.out.println("1) Despachado");
+            System.out.println("2) Entregado");
+            opc = sc.nextLine();
+            System.out.println("Ingrese la fecha: ");
+            aux = sc.nextLine();
+            switch (opc) {
+                case "1" -> {
+                    System.out.println("Estado agregado");
+                    Estado es = new Estado(pa.getEstados().size() + 1, "Despachado", aux);
+                    pa.getEstados().add(es);
+                    return pa;
+                }
+                case "2" -> {
+                    Estado es = new Estado(pa.getEstados().size() + 1, "Entregado", aux);
+                    pa.getEstados().add(es);
+                    return pa;
+                }
+                default -> {
+                    System.out.println("Opción no válida");
+                }
+            }
+        } else {
+            System.out.println("El paquete ya tiene todos los estado posibles");
+        }
+
+        return pa;
     }
 }

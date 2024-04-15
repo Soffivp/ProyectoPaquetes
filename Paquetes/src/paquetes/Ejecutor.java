@@ -150,7 +150,7 @@ public class Ejecutor {
     }
 
     private static void listar(ArrayList<Cliente> clientes) {
-        if (clientes.isEmpty()) {
+        if (!clientes.isEmpty()) {
             for (Cliente cliente : clientes) {
                 System.out.println(cliente);
             }

@@ -11,28 +11,28 @@ import java.util.ArrayList;
  * @author omerb
  */
 public class Cliente {
-    
+
     private int id;
     private String cedula;
     private String nom;
     private String ape;
     private String correo;
     private ArrayList<Direcciones> direccioneses;
-    private ArrayList<Paquete> paquetes;
+    private Paquete paquete;
 
-    public Cliente(int id, String cedula, String nom, String ape, String correo, ArrayList<Direcciones> direccioneses, ArrayList<Paquete> paquetes) {
+    public Cliente(int id, String cedula, String nom, String ape, String correo, ArrayList<Direcciones> direccioneses, Paquete paquete) {
         this.id = id;
         this.cedula = cedula;
         this.nom = nom;
         this.ape = ape;
         this.correo = correo;
         this.direccioneses = direccioneses;
-        this.paquetes = paquetes;
+        this.paquete = paquete;
     }
 
     public Cliente() {
-        this.direccioneses= new ArrayList<>();
-        this.paquetes=new ArrayList<>();
+        this.direccioneses = new ArrayList<>();
+
     }
 
     public int getId() {
@@ -83,12 +83,12 @@ public class Cliente {
         this.direccioneses = direccioneses;
     }
 
-    public ArrayList<Paquete> getPaquetes() {
-        return paquetes;
+    public Paquete getPaquetes() {
+        return paquete;
     }
 
-    public void setPaquetes(ArrayList<Paquete> paquetes) {
-        this.paquetes = paquetes;
+    public void setPaquetes(Paquete paquetes) {
+        this.paquete = paquetes;
     }
 
     @Override
@@ -103,13 +103,12 @@ public class Cliente {
                 getCedula(),
                 getCorreo());
         for (Direcciones direccionese : direccioneses) {
-            cadena=cadena+direccionese+"\n";
+            cadena = cadena + direccionese + "\n";
         }
-        for (Paquete paquete : paquetes) {
-             cadena=cadena+paquete+"\n";
-        }
+        cadena = cadena + paquete + "\n";
+
         return cadena;
-       
+
     }
- 
+
 }

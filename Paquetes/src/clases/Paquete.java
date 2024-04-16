@@ -4,7 +4,9 @@
  */
 package clases;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  *
@@ -32,6 +34,12 @@ public class Paquete {
 
     public Paquete() {
         this.estados = new ArrayList<>();
+        Estado estado1 = new Estado(1, "Creado", fechaActual());
+        Estado es2 = new Estado(2, "Despachado", null);
+        Estado es3 = new Estado(3, "Entregado", null);
+        estados.add(estado1);
+        estados.add(es2);
+        estados.add(es3);
     }
 
     public int getId() {
@@ -88,6 +96,12 @@ public class Paquete {
 
     public void setEstados(ArrayList<Estado> estados) {
         this.estados = estados;
+    }
+
+    private static String fechaActual() {
+        Date fecha = new Date();
+        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/YYYY");
+        return formatoFecha.format(fecha);
     }
 
     @Override

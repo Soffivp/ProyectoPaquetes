@@ -27,11 +27,9 @@ public class Ejecutor {
     public static void main(String[] args) {
         // TODO code application logic here
         String opc;
-        int a;
         Cliente cli = new Cliente();
         Scanner sc = new Scanner(System.in);
         boolean bandera = true;
-        Paquete paquete = new Paquete();
         do {
             System.out.println("-----Menu-----");
             System.out.println("1) Ingresar Cliente");
@@ -50,17 +48,7 @@ public class Ejecutor {
                     insertarPaquete(cli);
                 }
                 case "3" -> {
-                    System.out.print("Ingrese el codigo del paquete: ");
-                    opc = sc.nextLine();
-                    paquete.setCodigo(opc);
-                    a = buscarPaquete(cli, paquete);
-                    if (a == -1) {
-                        System.out.println("No existe el paquete");
-                    } else {
-                        paquete = cli.getPaquetes().get(a);
-                        cambiarEstado(paquete);
-                        cli.getPaquetes().add(a, paquete);
-                    }
+                    cambiarEstado(cli);
                 }
                 case "4" -> {
                     insertarDirecion(cli);
@@ -97,6 +85,8 @@ public class Ejecutor {
             cli.setCedula(aux);
             if (!ValidaCedula(cli)) {
                 System.out.println("Cedula no valida");
+                cli.setApe(null);
+                cli.setNom(null);
             } else {
                 cli.setId(1);
                 System.out.print("Ingrese su correo: ");
@@ -104,8 +94,12 @@ public class Ejecutor {
                 cli.setCorreo(aux);
                 if (!validarCorreo(cli)) {
                     System.out.println("Ingrese bien el correo");
+                    cli.setApe(null);
+                    cli.setNom(null);
+                    cli.setCorreo(null);
                 } else {
                     System.out.println("Cliente ingresado");
+
                 }
             }
         }
@@ -150,7 +144,7 @@ public class Ejecutor {
 
     private static void listar(Cliente cli) {
         if (cli.getApe() != null && cli.getNom() != null) {
-            System.out.println(cli);
+            System.out.println(cli.getPaquetes());
         } else {
             System.out.println("Ingrese primero un cliente");
         }
@@ -160,8 +154,8 @@ public class Ejecutor {
         String aux;
         Scanner sc = new Scanner(System.in);
         Paquete paque = new Paquete();
-        Estado estado1 = new Estado(1, "Creado", fechaActual());
-        if (cli.getApe() != null && cli.getNom() != null && !cli.getDireccioneses().isEmpty()) {
+
+        if (cli.getApe() != null && cli.getNom() != null && !cli.getDireccioneses().isEmpty() && cli.getPaquetes()==null) {
             System.out.println("Ingrese el Codigo del paquete:");
             aux = sc.nextLine();
             paque.setCodigo(aux);
@@ -171,24 +165,11 @@ public class Ejecutor {
             paque.setAncho(obtenerNumero("Ingrese el ancho del paquete: "));
             paque.setLargo(obtenerNumero("Ingrese el largo del paquete: "));
             paque.setPeso(obtenerNumero("Ingrese el peso del paquete: "));
-            paque.getEstados().add(estado1);
-            if (!cli.getPaquetes().isEmpty()) {
-                paque.setId(cli.getPaquetes().size() + 1);
-                cli.getPaquetes().add(paque);
-            } else {
-                paque.setId(1);
-                cli.getPaquetes().add(paque);
-            }
+            cli.setPaquetes(paque);
 
         } else {
-            System.out.println("Ingrese un Cliente y su direccion");
+            System.out.println("Ingrese un Cliente y su direccion o ya esciste un paquete");
         }
-    }
-
-    private static String fechaActual() {
-        Date fecha = new Date();
-        SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/YYYY");
-        return formatoFecha.format(fecha);
     }
 
     private static double obtenerNumero(String pregunta) {
@@ -211,45 +192,39 @@ public class Ejecutor {
         return numero;
     }
 
-    private static int buscarPaquete(Cliente cli, Paquete paque) {
-        for (int i = 0; i < cli.getPaquetes().size(); i++) {
-            if (cli.getPaquetes().get(i).getCodigo().equals(paque.getCodigo())) {
-                return i;
-            }
-        }
-        return -1;
-    }
+    private static void cambiarEstado(Cliente cli) {
 
-    private static Paquete cambiarEstado(Paquete pa) {
         String aux, opc;
         Scanner sc = new Scanner(System.in);
-        if (pa.getEstados().size() < 3) {
-            System.out.println("Seleccione el estado que desea agregar");
-            System.out.println("1) Despachado");
-            System.out.println("2) Entregado");
-            opc = sc.nextLine();
-            System.out.println("Ingrese la fecha: ");
-            aux = sc.nextLine();
-            switch (opc) {
-                case "1" -> {
-                    System.out.println("Estado agregado");
-                    Estado es = new Estado(pa.getEstados().size() + 1, "Despachado", aux);
-                    pa.getEstados().add(es);
-                    return pa;
+        if (cli.getPaquetes() != null) {
+            if (cli.getPaquetes().getEstados().get(1).getFecha() == null || cli.getPaquetes().getEstados().get(2).getFecha() == null) {
+                System.out.println("Seleccione el estado que desea agregar");
+                System.out.println("1) Despachado");
+                System.out.println("2) Entregado");
+                opc = sc.nextLine();
+                System.out.println("Ingrese la fecha: ");
+                aux = sc.nextLine();
+                switch (opc) {
+                    case "1" -> {
+                        System.out.println("Estado agregado");
+                        cli.getPaquetes().getEstados().get(1).setFecha(aux);
+
+                    }
+                    case "2" -> {
+                        System.out.println("Estado agregado");
+                        cli.getPaquetes().getEstados().get(2).setFecha(aux);
+
+                    }
+                    default -> {
+                        System.out.println("Opción no válida no se agrego ningun estado");
+                    }
                 }
-                case "2" -> {
-                    Estado es = new Estado(pa.getEstados().size() + 1, "Entregado", aux);
-                    pa.getEstados().add(es);
-                    return pa;
-                }
-                default -> {
-                    System.out.println("Opción no válida");
-                }
+            } else {
+                System.out.println("El paquete ya tiene todos los estado posibles");
             }
         } else {
-            System.out.println("El paquete ya tiene todos los estado posibles");
+            System.out.println("Ingrese un paquete");
         }
 
-        return pa;
     }
 }
